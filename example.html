@@ -27,10 +27,25 @@ body {
 	anything else
 </div>
 <script type="text/javascript">
+var random_color = function () {
+
+	var allowed = 'ABCDEF0123456789', S = '';
+
+	while (S.length < 3) {
+		S += allowed.charAt(Math.floor((Math.random() * 16) + 1));
+	}
+
+	return S;
+};
+
 var recycler = new ImageRecycler(document.getElementById('target'), function (idx) {
 
+	var height = 240 + (idx % 5) * 20;
+
+
 	return {
-		url: 'https://dummyimage.com/320x240/000/fff&text=idx_' + idx,
+
+		url: 'https://dummyimage.com/320x' + height + '/' + random_color() + '/fff&text=idx_' + idx,
 		href: 'about:blank'
 	};
 
