@@ -52,7 +52,7 @@
 		// Scroller
 		var scroller = window.document.createElement('div');
 		scroller.style.width = '100%';
-		scroller.style.height = '200%';
+		scroller.style.height = '400%';
 		scroller.style.position = 'absolute';
 		scroller.style.top = '-50%';
 		scroller.style.left = '0';
@@ -135,9 +135,9 @@
 		var delta = (cur_top - last_top) * this.pixel_ratio;
 		this.cur_offset -= delta;
 
-		var eighth = this.dom.offsetHeight / 8;
+		var eighth = this.dom.offsetHeight;
 
-		if (cur_top > eighth * 3) {
+		if (cur_top > eighth * 2) {
 
 			this.dom.parentElement.scrollTop -= eighth;
 
