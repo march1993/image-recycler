@@ -52,11 +52,12 @@
 		// Scroller
 		var scroller = window.document.createElement('div');
 		scroller.style.width = '100%';
-		scroller.style.height = '400%';
+		scroller.style.height = '200%';
 		scroller.style.position = 'absolute';
 		scroller.style.top = '-50%';
 		scroller.style.left = '0';
 		dom.parentElement.insertBefore(scroller, dom.nextSibling);
+		dom.parentElement.scrollTop = 0;
 
 		this.onscroll = function (e) {
 
@@ -134,22 +135,25 @@
 
 		var delta = (cur_top - last_top) * this.pixel_ratio;
 		this.cur_offset -= delta;
+		misc.innerHTML = 'scroll delta: ' + delta + ', cur:' + cur_top + ',last_top:' + last_top + '<br>' + misc.innerHTML;
 
-		var eighth = this.dom.offsetHeight;
+		var eighth = this.dom.offsetHeight / 8;
+		var parent = this.dom.parentElement;
 
-		if (cur_top > eighth * 2) {
+		if ((parent.scrollHeight - parent.offsetHeight - cur_top) < eighth) {
 
-			this.dom.parentElement.scrollTop -= eighth;
+			parent.scrollTop -= eighth;
 
 		}
 
 		if (cur_top < eighth) {
 
-			this.dom.parentElement.scrollTop += eighth;
+			parent.scrollTop += eighth;
 
 		}
 
-		this.last_top = this.dom.parentElement.scrollTop;
+		this.last_top = parent.scrollTop;
+		misc.innerHTML = 'changing last_top(scrollTop):' + this.last_top + '<br>' + misc.innerHTML;
 
 	};
 
@@ -236,6 +240,8 @@
 
 		this.first_insight = idx;
 		this.first_insight_offset = offset;
+
+		// console.log('fix first insight', idx, offset);
 
 	};
 
