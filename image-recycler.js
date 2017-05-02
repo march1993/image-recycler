@@ -38,7 +38,7 @@
 		this.scroller = scroller;
 		scroller.style.width = '100%';
 		scroller.style.height = '200%';
-		scroller.style.position = 'absolute';
+		// scroller.style.position = 'absolute';
 		scroller.style.top = '-50%';
 		scroller.style.left = '0';
 		dom.parentElement.insertBefore(scroller, dom.nextSibling);
@@ -170,9 +170,8 @@
 
 			// parent.scrollTop -= eighth;
 			// increase the height of scroller
-			var origin = parseInt(this.scroller.style.top);
-			this.scroller.style.top = (origin + 100) + '%';
-			// this.scroller.style.top = (- origin / 2) + '%';
+			// var origin = parseInt(this.scroller.style.top);
+			//this.scroller.style.top = (origin + this.dom.offsetHeight) + 'px';
 
 		}
 
@@ -183,12 +182,13 @@
 			// var origin = parseInt(this.scroller.style.height);
 			// this.scroller.style.height = (origin + 100) + '%';
 			// this.scroller.style.top = (- origin / 2) + '%';
+			misc.innerHTML = 'add padding';
+			// var origin = parseInt(this.scroller.style.top);
+			// this.scroller.style.top = (origin - 100) + '%';
 
 		}
 
 		this.last_top = parent.scrollTop;
-
-		//misc.innerHTML = document.body.clientHeight;
 
 		this.dom.style.top = (this.last_top - this.aflicker) + 'px';
 	};
