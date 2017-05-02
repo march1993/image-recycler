@@ -3,6 +3,14 @@
 
 	var ImageRecycler = function (dom, image_url_getter) {
 
+		if (window.history !== undefined && 'scrollRestoration' in window.history) {
+
+			history.scrollRestoration = 'manual';
+
+		}
+
+		this.aflicker = 100;
+
 		// status
 		this.dom = dom;
 		this.ctx = dom.getContext('2d');
@@ -11,7 +19,7 @@
 		this.need_update = true;
 		this.loop = [];
 		this.pixel_ratio = window.devicePixelRatio || 1.0;
-		this.cur_offset = 0;
+		this.cur_offset = this.aflicker;
 
 		var first_item = this.create_item(0);
 		this.update_size_item(first_item);
@@ -20,37 +28,14 @@
 		// DOM CSS
 		dom.style.width = '100%';
 		dom.style.height = '100%';
-		dom.style.position = 'fixed';
+		dom.style.position = 'absolute';
 		dom.style.left = '0';
 		dom.style.top = '0';
-
-		this.onresize = function (e) {
-
-			this.need_update = true;
-
-		}.bind(this);
-
-		window.addEventListener('resize', this.onresize);
-		window.addEventListener('orientationchange', this.onresize);
-		this.onresize(null);
-
-
-		this.dummy_next = function (timestamp) {
-
-			if (!this.disposed) {
-
-				this.raf(this.dummy_next);
-				this.animate(timestamp);
-
-			}
-
-		}.bind(this);
-		this.raf = window.requestAnimationFrame.bind(window);
-		this.raf(this.dummy_next);
 
 
 		// Scroller
 		var scroller = window.document.createElement('div');
+		this.scroller = scroller;
 		scroller.style.width = '100%';
 		scroller.style.height = '200%';
 		scroller.style.position = 'absolute';
@@ -65,6 +50,48 @@
 
 		}.bind(this);
 		window.document.addEventListener('scroll', this.onscroll, false);
+
+		// requestAnimationFrame
+		this.dummy_next = function (timestamp) {
+
+			// fix when iOS Safari changes window.innerHeight (e.g. hides address bar)
+			if (this.dom.parentElement === window.document.body) {
+
+				var
+					last_inner_height = this.last_inner_height || 0,
+					cur_inner_height = window.innerHeight;
+
+				if (cur_inner_height !== last_inner_height) {
+
+					this.need_update = true;
+
+				}
+
+				this.last_inner_height = cur_inner_height;
+
+			}
+
+			if (!this.disposed) {
+
+				this.raf(this.dummy_next);
+				this.animate(timestamp);
+
+			}
+
+		}.bind(this);
+		this.raf = window.requestAnimationFrame.bind(window);
+		this.raf(this.dummy_next);
+
+		// Resize Event
+		this.onresize = function (e) {
+
+			this.need_update = true;
+
+		}.bind(this);
+
+		window.addEventListener('resize', this.onresize);
+		window.addEventListener('orientationchange', this.onresize);
+		this.onresize(null);
 
 	};
 
@@ -135,26 +162,35 @@
 
 		var delta = (cur_top - last_top) * this.pixel_ratio;
 		this.cur_offset -= delta;
-		misc.innerHTML = 'scroll delta: ' + delta + ', cur:' + cur_top + ',last_top:' + last_top + '<br>' + misc.innerHTML;
 
 		var eighth = this.dom.offsetHeight / 8;
 		var parent = this.dom.parentElement;
 
 		if ((parent.scrollHeight - parent.offsetHeight - cur_top) < eighth) {
 
-			parent.scrollTop -= eighth;
+			// parent.scrollTop -= eighth;
+			// increase the height of scroller
+			var origin = parseInt(this.scroller.style.top);
+			this.scroller.style.top = (origin + 100) + '%';
+			// this.scroller.style.top = (- origin / 2) + '%';
 
 		}
 
 		if (cur_top < eighth) {
 
-			parent.scrollTop += eighth;
+			// TODO:
+			// parent.scrollTop += eighth;
+			// var origin = parseInt(this.scroller.style.height);
+			// this.scroller.style.height = (origin + 100) + '%';
+			// this.scroller.style.top = (- origin / 2) + '%';
 
 		}
 
 		this.last_top = parent.scrollTop;
-		misc.innerHTML = 'changing last_top(scrollTop):' + this.last_top + '<br>' + misc.innerHTML;
 
+		//misc.innerHTML = document.body.clientHeight;
+
+		this.dom.style.top = (this.last_top - this.aflicker) + 'px';
 	};
 
 	ImageRecycler.prototype.update_layout = function () {
@@ -163,7 +199,16 @@
 
 		var
 			dom_w = dom.offsetWidth,
-			dom_h = dom.offsetHeight;
+			dom_h = dom.offsetHeight + 2 * this.aflicker;
+
+		if (dom.parentElement === window.document.body) {
+
+			// additional 200 to avoid flickering
+			var real_height = window.innerHeight + 2 * this.aflicker;
+			dom.style.height = real_height + 'px';
+			dom_h = real_height;
+
+		}
 
 		dom.height = dom_h * this.pixel_ratio;
 		dom.width = dom_w * this.pixel_ratio;
