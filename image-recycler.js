@@ -1,3 +1,7 @@
+/**
+ *	https://github.com/march1993/image-recycler
+ */
+
 (function () {
 	'use strict';
 
@@ -9,7 +13,7 @@
 
 		}
 
-		this.aflicker = 100;
+		this.aflicker = 300;
 
 		// status
 		this.dom = dom;
@@ -19,7 +23,7 @@
 		this.need_update = true;
 		this.loop = [];
 		this.pixel_ratio = window.devicePixelRatio || 1.0;
-		this.cur_offset = this.aflicker;
+		this.cur_offset = 0;
 
 		var first_item = this.create_item(0);
 		this.update_size_item(first_item);
@@ -28,21 +32,17 @@
 		// DOM CSS
 		dom.style.width = '100%';
 		dom.style.height = '100%';
-		dom.style.position = 'absolute';
+		dom.style.position = 'relative';
 		dom.style.left = '0';
 		dom.style.top = '0';
-
-
-		// Scroller
-		var scroller = window.document.createElement('div');
-		this.scroller = scroller;
-		scroller.style.width = '100%';
-		scroller.style.height = '200%';
-		// scroller.style.position = 'absolute';
-		scroller.style.top = '-50%';
-		scroller.style.left = '0';
-		dom.parentElement.insertBefore(scroller, dom.nextSibling);
 		dom.parentElement.scrollTop = 0;
+
+		// Scroll Helper
+		var scroll_helper = window.document.createElement('div');
+		this.scroll_helper = scroll_helper;
+		scroll_helper.style.width = '100%';
+		scroll_helper.style.height = '0px';
+		//dom.parentElement.insertBefore(scroll_helper, dom);
 
 		this.onscroll = function (e) {
 
@@ -134,13 +134,13 @@
 
 				if (item.loaded) {
 
-					this.ctx.drawImage(item.image, 0, offset, item.width, item.height);
+					this.ctx.drawImage(item.image, 0, offset + this.aflicker * this.pixel_ratio, item.width, item.height);
 
 				} else {
 
 					// dummy
 					this.ctx.fillStyle = 'green';
-					this.ctx.fillRect(0, offset, item.width, item.height);
+					this.ctx.fillRect(0, offset + this.aflicker * this.pixel_ratio, item.width, item.height);
 
 				}
 
@@ -166,25 +166,10 @@
 		var eighth = this.dom.offsetHeight / 8;
 		var parent = this.dom.parentElement;
 
-		if ((parent.scrollHeight - parent.offsetHeight - cur_top) < eighth) {
+		var origin = parseInt(this.scroll_helper.style.height);
+		if (cur_top + origin < eighth) {
 
-			// parent.scrollTop -= eighth;
-			// increase the height of scroller
-			// var origin = parseInt(this.scroller.style.top);
-			//this.scroller.style.top = (origin + this.dom.offsetHeight) + 'px';
-
-		}
-
-		if (cur_top < eighth) {
-
-			// TODO:
-			// parent.scrollTop += eighth;
-			// var origin = parseInt(this.scroller.style.height);
-			// this.scroller.style.height = (origin + 100) + '%';
-			// this.scroller.style.top = (- origin / 2) + '%';
-			misc.innerHTML = 'add padding';
-			// var origin = parseInt(this.scroller.style.top);
-			// this.scroller.style.top = (origin - 100) + '%';
+			// this.scroll_helper.style.height = origin + 100 + 'px';
 
 		}
 
