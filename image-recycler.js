@@ -37,13 +37,6 @@
 		dom.style.top = '0';
 		dom.parentElement.scrollTop = 0;
 
-		// Scroll Helper
-		var scroll_helper = window.document.createElement('div');
-		this.scroll_helper = scroll_helper;
-		scroll_helper.style.width = '100%';
-		scroll_helper.style.height = '0px';
-		//dom.parentElement.insertBefore(scroll_helper, dom);
-
 		this.onscroll = function (e) {
 
 			this.need_update = true;
@@ -139,7 +132,7 @@
 				} else {
 
 					// dummy
-					this.ctx.fillStyle = 'green';
+					this.ctx.fillStyle = '#ccc';
 					this.ctx.fillRect(0, offset + this.aflicker * this.pixel_ratio, item.width, item.height);
 
 				}
@@ -165,13 +158,6 @@
 
 		var eighth = this.dom.offsetHeight / 8;
 		var parent = this.dom.parentElement;
-
-		var origin = parseInt(this.scroll_helper.style.height);
-		if (cur_top + origin < eighth) {
-
-			// this.scroll_helper.style.height = origin + 100 + 'px';
-
-		}
 
 		this.last_top = parent.scrollTop;
 
@@ -236,6 +222,33 @@
 			this.remove_item(to_remove);
 
 		}
+
+
+		// bug fix: relocate the first element to align the baseline when scrolled to the top
+		if (this.dom.parentElement.scrollTop === 0) {
+
+			this.fix_first_insight();
+
+			if (this.first_insight_offset > 0) {
+
+				var delta = parseInt(this.first_insight_offset * 0.2);
+
+				if (delta === 0) {
+
+					delta = 1;
+
+				}
+
+				this.first_insight_offset -= delta;
+
+				this.restore_first_insight();
+
+				this.need_update = true;
+
+			}
+
+		}
+
 
 	};
 
