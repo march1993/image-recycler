@@ -82,9 +82,46 @@
 
 		}.bind(this);
 
+		// Click Event
+		this.onclick = function (e) {
+
+			this.click_handler(e);
+
+		}.bind(this);
+
+		dom.addEventListener('click', this.onclick, false);
 		window.addEventListener('resize', this.onresize);
 		window.addEventListener('orientationchange', this.onresize);
 		this.onresize(null);
+
+	};
+
+	ImageRecycler.prototype.click_handler = function (e) {
+
+		var
+			offset_y = (e.offsetY - this.aflicker) * this.pixel_ratio,
+			offset = this.cur_offset;
+
+		for (var i = 0; i < this.loop.length; i++) {
+
+			offset += this.loop[i].height;
+
+			if (offset_y <= offset) {
+
+				var a = window.document.createElement('a');
+				a.href = this.loop[i].href;
+				a.target = '_blank';
+				var click = window.document.createEvent('MouseEvents');
+				click.initMouseEvent('click', true, true);
+				a.dispatchEvent(click);
+
+				i = this.loop.length;
+
+			}
+
+		}
+
+
 
 	};
 
@@ -105,6 +142,7 @@
 
 	ImageRecycler.prototype.dispose = function () {
 
+		this.dom.removeEventListener('click', this.onclick, false);
 		window.document.removeEventListener('scroll', this.onscroll, false);
 		window.removeEventListener('resize', this.onresize);
 		window.removeEventListener('orientationchange', this.onresize);

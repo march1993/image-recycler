@@ -12,8 +12,8 @@ body {
 	margin: 0;
 }
 #misc {
-	width: 100%;
-	height: 100%;
+	width: 0;
+	height: 0;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -40,13 +40,15 @@ var random_color = function () {
 
 var recycler = new ImageRecycler(document.getElementById('target'), function (idx) {
 
-	var height = 240 + (idx % 5) * 20;
+	var
+		height = 240 + (idx % 5) * 20,
+		url = 'https://dummyimage.com/320x' + height + '/' + random_color() + '/fff&text=idx_' + idx;
 
 
 	return {
 
-		url: 'https://dummyimage.com/320x' + height + '/' + random_color() + '/fff&text=idx_' + idx,
-		href: 'about:blank'
+		url: url,
+		href: url
 	};
 
 });
