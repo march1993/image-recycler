@@ -112,7 +112,21 @@
 				a.href = this.loop[i].href;
 				a.target = '_blank';
 				var click = window.document.createEvent('MouseEvents');
-				click.initMouseEvent('click', true, true);
+				click.initMouseEvent('click',
+					true,
+					true,
+					a.ownerDocument.defaultView,
+					1,
+					0,
+					0,
+					0,
+					0,
+					false,
+					false,
+					false,
+					false,
+					0,
+					null);
 				a.dispatchEvent(click);
 
 				i = this.loop.length;
