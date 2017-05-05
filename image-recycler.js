@@ -5,7 +5,7 @@
 (function () {
 	'use strict';
 
-	var ImageRecycler = function (dom, image_url_getter) {
+	var ImageRecycler = function (dom, image_url_getter, offset_top) {
 
 		if (window.history !== undefined && 'scrollRestoration' in window.history) {
 
@@ -14,6 +14,7 @@
 		}
 
 		this.aflicker = 300;
+		this.offset_top = offset_top || 0;
 
 		// status
 		this.dom = dom;
@@ -213,7 +214,7 @@
 
 		this.last_top = parent.scrollTop;
 
-		this.dom.style.top = (this.last_top - this.aflicker) + 'px';
+		this.dom.style.top = (this.last_top - this.aflicker + this.offset_top) + 'px';
 	};
 
 	ImageRecycler.prototype.update_layout = function () {
@@ -411,7 +412,6 @@
 		item.image.src = '';
 
 	};
-
 
 	window.ImageRecycler = ImageRecycler;
 
