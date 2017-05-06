@@ -198,6 +198,8 @@
 
 		}
 
+		offset += this.aflicker * this.pixel_ratio;
+
 		this.loop.forEach(function (item) {
 
 			var in_sight = (offset + item.height) >= up_bound && offset <= this.dom.height;
@@ -208,13 +210,13 @@
 
 				if (item.loaded) {
 
-					this.ctx.drawImage(item.image, 0, offset + this.aflicker * this.pixel_ratio, item.width, item.height);
+					this.ctx.drawImage(item.image, 0, offset, item.width, item.height);
 
 				} else {
 
 					// dummy
 					this.ctx.fillStyle = '#ccc';
-					this.ctx.fillRect(0, offset + this.aflicker * this.pixel_ratio, item.width, item.height);
+					this.ctx.fillRect(0, offset, item.width, item.height);
 
 				}
 
