@@ -170,9 +170,37 @@
 
 		var offset = this.cur_offset;
 
+		var up_bound = 0;
+		// fix when iOS overscroll
+		var parent = this.dom.parentElement;
+		if (parent === window.document.body) {
+
+			if (parent.scrollTop < 0) {
+
+				// set to fixed temporarily
+				if (this.dom.style.position !== 'fixed') {
+
+					this.dom.style.position  = 'fixed';
+
+				}
+				up_bound = parseInt(parent.scrollTop * this.pixel_ratio);
+				offset -= up_bound;
+
+			} else {
+
+				if (this.dom.style.position !== 'relative') {
+
+					this.dom.style.position = 'relative';
+
+				}
+
+			}
+
+		}
+
 		this.loop.forEach(function (item) {
 
-			var in_sight = (offset + item.height) >= 0 && offset <= this.dom.height;
+			var in_sight = (offset + item.height) >= up_bound && offset <= this.dom.height;
 
 			if (in_sight) {
 
