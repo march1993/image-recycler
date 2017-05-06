@@ -5,7 +5,7 @@
 (function () {
 	'use strict';
 
-	var ImageRecycler = function (dom, image_url_getter, offset_top) {
+	var ImageRecycler = function (dom, image_url_getter, offset_top, gap) {
 
 		if (window.history !== undefined && 'scrollRestoration' in window.history) {
 
@@ -25,6 +25,7 @@
 		this.loop = [];
 		this.pixel_ratio = window.devicePixelRatio || 1.0;
 		this.cur_offset = 0;
+		this.gap = parseInt(gap * this.pixel_ratio) || 0;
 
 		var first_item = this.create_item(0);
 		this.update_size_item(first_item);
@@ -105,7 +106,7 @@
 
 		for (var i = 0; i < this.loop.length; i++) {
 
-			offset += this.loop[i].height;
+			offset += this.loop[i].height + this.gap;
 
 			if (offset_y <= offset) {
 
@@ -224,7 +225,7 @@
 			}
 
 
-			offset += item.height;
+			offset += item.height + this.gap;
 
 		}.bind(this));
 
@@ -276,14 +277,14 @@
 			var item = this.create_item(this.loop[0].idx - 1);
 			this.loop.unshift(item);
 			this.update_size_item(item);
-			this.cur_offset -= item.height;
+			this.cur_offset -= item.height + this.gap;
 
 		}
 
 		while (this.cur_offset < - 2 * dom.height && (this.cur_offset + this.loop[0].height) < - 2 * dom.height) {
 
 			var to_remove = this.loop.shift();
-			this.cur_offset += to_remove.height;
+			this.cur_offset += to_remove.height + this.gap;
 			this.remove_item(to_remove);
 
 		}
@@ -294,14 +295,14 @@
 			var item = this.create_item(this.loop[this.loop.length - 1].idx + 1);
 			this.loop.push(item);
 			this.update_size_item(item);
-			end_pos += item.height;
+			end_pos += item.height + this.gap;
 
 		}
 
 		while (end_pos > 2 * dom.height && (end_pos -= this.loop[this.loop.length - 1].height) > 2 * dom.height) {
 
 			var to_remove = this.loop.pop();
-			end_pos -= to_remove.height;
+			end_pos -= to_remove.height - this.gap;
 			this.remove_item(to_remove);
 
 		}
@@ -341,9 +342,9 @@
 
 		this.loop.forEach(function (item) {
 
-			height += item.height;
+			height += item.height + this.gap;
 
-		})
+		}, this);
 
 		return height;
 
@@ -359,7 +360,7 @@
 
 		while (offset < 0 && idx < this.loop.length) {
 
-			offset += this.loop[idx].height;
+			offset += this.loop[idx].height + this.gap;
 			idx += 1;
 
 		}
@@ -377,7 +378,7 @@
 
 		for (var idx = 0; idx < this.first_insight; idx += 1) {
 
-			offset += this.loop[idx].height;
+			offset += this.loop[idx].height + this.gap;
 
 		}
 
