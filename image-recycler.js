@@ -7,6 +7,18 @@
 
 	var ImageRecycler = function (dom, image_url_getter, offset_top, gap) {
 
+		/**
+		 *	EventTarget
+		 */
+		this.event_target = window.document.createDocumentFragment();
+		['addEventListener', 'dispatchEvent', 'removeEventListener'].forEach(function (foo) {
+			this[foo] = this.event_target[foo].bind(this.event_target);
+		}, this);
+
+		/***
+		 *	initialize
+		 */
+
 		if (window.history !== undefined && 'scrollRestoration' in window.history) {
 
 			history.scrollRestoration = 'manual';
@@ -201,6 +213,8 @@
 
 		offset += this.aflicker * this.pixel_ratio;
 
+		var in_sights = [];
+
 		this.loop.forEach(function (item) {
 
 			var in_sight = (offset + item.height) >= up_bound && offset <= this.dom.height;
@@ -208,7 +222,6 @@
 			if (in_sight) {
 
 				// draw
-
 				if (item.loaded) {
 
 					this.ctx.drawImage(item.image, 0, offset, item.width, item.height);
@@ -221,6 +234,16 @@
 
 				}
 
+				// put into the in_sights array
+				item.position = {
+
+					left: 0,
+					right: item.width / 2,
+					top: offset / this.pixel_ratio - this.aflicker,
+					bottom: (offset + item.height + this.gap) / this.pixel_ratio - this.aflicker
+
+				};
+				in_sights.push(item);
 
 			}
 
@@ -228,6 +251,16 @@
 			offset += item.height + this.gap;
 
 		}.bind(this));
+
+		var event = new CustomEvent('Event', {
+
+			detail: in_sights
+
+		});
+
+		event.initEvent('render', true, true);
+
+		this.dispatchEvent(event);
 
 	};
 
@@ -416,6 +449,7 @@
 		var item = this.image_url_getter(idx);
 		item.idx = idx;
 		item.loaded = false;
+		item.removed = false;
 
 		var image = new Image();
 		item.image = image;
