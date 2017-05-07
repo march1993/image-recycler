@@ -238,9 +238,9 @@
 				item.position = {
 
 					left: 0,
-					right: item.width / 2,
-					top: offset / this.pixel_ratio - this.aflicker,
-					bottom: (offset + item.height + this.gap) / this.pixel_ratio - this.aflicker
+					width: item.width / 2,
+					top: offset / this.pixel_ratio + this.offset_top - this.aflicker,
+					height: (item.height + this.gap) / this.pixel_ratio
 
 				};
 				in_sights.push(item);
