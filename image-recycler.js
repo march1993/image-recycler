@@ -5,7 +5,7 @@
 (function () {
 	'use strict';
 
-	var ImageRecycler = function (dom, image_url_getter, offset_top, gap) {
+	var ImageRecycler = function (dom, image_url_getter, offset_top, gap, a_target) {
 
 		/**
 		 *	EventTarget
@@ -27,6 +27,7 @@
 
 		this.aflicker = 300;
 		this.offset_top = offset_top || 0;
+		this.a_target = a_target || '_self';
 
 		// status
 		this.dom = dom;
@@ -124,7 +125,7 @@
 
 				var a = window.document.createElement('a');
 				a.href = this.loop[i].href;
-				a.target = '_blank';
+				a.target = this.a_target;
 				var click = window.document.createEvent('MouseEvents');
 				click.initMouseEvent('click',
 					true,
