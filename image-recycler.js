@@ -50,7 +50,16 @@
 		dom.style.position = 'relative';
 		dom.style.left = '0';
 		dom.style.top = '0';
-		dom.parentElement.scrollTop = 0;
+
+		var parent = dom.parentElement;
+		this.parent = parent;
+
+		parent.scrollTop = 0;
+		if (parent === document.body) {
+
+			document.documentElement.scrollTop = 0;
+
+		}
 
 		this.onscroll = function (e) {
 
@@ -186,10 +195,10 @@
 
 		var up_bound = 0;
 		// fix when iOS overscroll
-		var parent = this.dom.parentElement;
+		var parent = this.parent;
 		if (parent === window.document.body) {
 
-			if (parent.scrollTop < 0) {
+			if (parent.scrollTop < 0 || document.documentElement.scrollTop < 0) {
 
 				// set to fixed temporarily
 				if (this.dom.style.position !== 'fixed') {
@@ -197,7 +206,7 @@
 					this.dom.style.position  = 'fixed';
 
 				}
-				up_bound = parseInt(parent.scrollTop * this.pixel_ratio);
+				up_bound = parseInt((parent.scrollTop || document.documentElement.scrollTop) * this.pixel_ratio);
 				offset -= up_bound;
 
 			} else {
@@ -269,7 +278,7 @@
 
 		var
 			last_top = this.last_top || 0,
-			cur_top = this.dom.parentElement.scrollTop;
+			cur_top = (this.parent === document.body) ? (this.parent.scrollTop || document.documentElement.scrollTop) : this.parent.scrollTop;
 
 		var delta = (cur_top - last_top) * this.pixel_ratio;
 		this.cur_offset -= delta;
@@ -277,7 +286,7 @@
 		var eighth = this.dom.offsetHeight / 8;
 		var parent = this.dom.parentElement;
 
-		this.last_top = parent.scrollTop;
+		this.last_top = cur_top;
 
 		this.dom.style.top = (this.last_top - this.aflicker + this.offset_top) + 'px';
 	};
@@ -343,7 +352,19 @@
 
 
 		// bug fix: relocate the first element to align the baseline when scrolled to the top
-		if (this.dom.parentElement.scrollTop === 0) {
+		var need_bug_fix = false;
+		if (this.parent.scrollTop === 0 ) {
+
+			need_bug_fix = true;
+
+			if (this.parent === document.body && document.documentElement.scrollTop !== undefined && document.documentElement.scrollTop !== 0) {
+
+				need_bug_fix = false;
+
+			}
+		}
+
+		if (need_bug_fix) {
 
 			this.fix_first_insight();
 
